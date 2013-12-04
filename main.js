@@ -2,6 +2,15 @@
 (function() {
   $(function() {
     var all_point, canvas, center, context, drawPoint, height, pi, point_in_the_circle, radius, update, width;
+    canvas = document.getElementById('canvas');
+    context = canvas.getContext('2d');
+    width = $('#canvas').width();
+    height = $('#canvas').height();
+    radius = width / 2;
+    center = {
+      x: width / 2,
+      y: height / 2
+    };
     drawPoint = function(ctx, x, y, in_the_circle, radius) {
       if (radius == null) {
         radius = 2;
@@ -15,17 +24,8 @@
       ctx.arc(x, y, radius, 0, Math.PI * 2, false);
       return ctx.fill();
     };
-    width = $('#canvas').width();
-    height = $('#canvas').height();
-    radius = width / 2;
-    center = {
-      x: width / 2,
-      y: height / 2
-    };
     all_point = 0;
     point_in_the_circle = 0;
-    canvas = document.getElementById('canvas');
-    context = canvas.getContext('2d');
     pi = 0;
     context.beginPath();
     context.arc(center.x, center.y, radius, 0, Math.PI * 2, false);
