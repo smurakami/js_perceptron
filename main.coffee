@@ -10,19 +10,28 @@ $ ->
     # 各種パラメータの設定
     width = $('#canvas').width()
     height = $('#canvas').height()
-    scale = width
-    radius = width / 2
-    center =
-        x: width / 2,
-        y: height / 2
+
+    min_x = -1
+    max_x = 1
+    min_y = -1
+    max_y = 1
+
+    scale_x = width / (max_x - min_x)
+    scale_y = height/ (max_y - min_y)
+
 
     # 描画速度
     fps = 30
 
+    convert_x = (x) ->
+        (x - min_x) * scale_x
+    convert_y = (y) ->
+        height - (y - min_y) * scale_y
+
     # 点の描画
     CanvasRenderingContext2D.prototype.drawPoint = (x, y, sign = 1, radius = 2) ->
-        x *= scale
-        y *= scale
+        x = convert_x(x)
+        y = convert_y(y)
         @beginPath()
         if sign >= 0
             @fillStyle = 'rgb(255, 0, 0)' # 赤
@@ -34,8 +43,8 @@ $ ->
     # 線の描画
     CanvasRenderingContext2D.prototype.drawLine = (a, b) ->
         @beginPath()
-        @moveTo(a.x * scale, a.y * scale)
-        @lineTo(b.x * scale, b.y * scale)
+        @moveTo(convert_x(a.x), convert_y(a.y))
+        @lineTo(convert_x(b.x), convert_y(b.y))
         @stroke()
 
     # 点
@@ -58,13 +67,13 @@ $ ->
             a = @w[0]
             b = @w[1]
             c = @w[2]
-            if b == 0 # x軸に平行な直線
+            if b == 0 # y軸に平行な直線
                 if a == 0 then return # 直線でない
-                p0 = {x:     0, y:-c/a}
-                p1 = {x: width, y:-c/a}
+                p0 = {x: -c/a, y: min_y}
+                p1 = {x: -c/a, y: max_y}
             else
-                p0 = {x:      0, y: -c/b}
-                p1 = {x:  width, y: -width * a/b + -c/b}
+                p0 = {x: min_x, y: -(min_x * a + c)/b}
+                p1 = {x: max_x, y: -(max_x * a + c)/b}
             if static_draw
                 ctx_static.drawLine(p0, p1)
             else
@@ -85,7 +94,7 @@ $ ->
         boundary = new Classifier() # 学習するパラメータ
 
         # 点の生成
-        points = (new Point(m.random(), m.random()) for i in [0...points_num])
+        points = (new Point(min_x + (max_x - min_x) * m.random(), min_y + (max_y - min_y) * m.random()) for i in [0...points_num])
 
         for p in points
             p.set_val(ans.calc(p))
