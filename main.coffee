@@ -10,7 +10,7 @@ $ ->
         y: height / 2
 
     # 点の描画
-    ctx.drawPoint = (x, y, in_the_circle, radius=2) ->
+    ctx.drawPoint = (x, y, in_the_circle, radius = 2) ->
         @beginPath()
         if(in_the_circle)
             @fillStyle = 'rgba(192, 80, 77, 0.7)' # 赤
@@ -26,36 +26,19 @@ $ ->
         @lineTo(b.x, b.y)
         @stroke()
 
-    all_point = 0
-    point_in_the_circle = 0
-    pi = 0
-    ctx.beginPath()
-    ctx.arc(center.x, center.y, radius, 0, Math.PI*2, false)
-    ctx.stroke()
-
-    ctx.drawLine({x:0, y:0}, {x:width, y:height})
+    # 点
+    class Point
+        constructor: (@x = 0, @y = 0) ->
 
     # ループ
     update = ->
-        x = Math.random() * width
-        y = Math.random() * height
-        in_the_circle = ((x - center.x)*(x - center.x) \
-                          + (y - center.y) * (y - center.y) < radius * radius)
-
-        if(in_the_circle)
-            point_in_the_circle++
-        all_point++
-        pi = point_in_the_circle / all_point * 4
-        ctx.drawPoint(x, y, in_the_circle)
-        $('#all_point').text('all_point: ' + all_point)
-        $('#point_in_the_circle').text('point_in_the_circle: ' + point_in_the_circle)
-        $('#pi').text('pi: ' + pi)
-        setTimeout(cycle, 10)
+        ctx.clearRect(0, 0, width, height)
 
     draw = ->
 
     cycle = ->
         update()
         draw()
+        setTimeout(cycle, 10)
 
     cycle()
