@@ -1,5 +1,5 @@
 $ ->
-    # get canvas
+    # canvasの取得
     canvas = document.getElementById('canvas')
     context = canvas.getContext('2d')
     width = $('#canvas').width()
@@ -26,6 +26,8 @@ $ ->
     context.beginPath()
     context.arc(center.x, center.y, radius, 0, Math.PI*2, false)
     context.stroke()
+
+    # ループ
     update = ->
         x = Math.random() * width
         y = Math.random() * height
@@ -40,5 +42,12 @@ $ ->
         $('#all_point').text('all_point: ' + all_point)
         $('#point_in_the_circle').text('point_in_the_circle: ' + point_in_the_circle)
         $('#pi').text('pi: ' + pi)
-        setTimeout(update, 10)
-    update()
+        setTimeout(cycle, 10)
+
+    draw = ->
+
+    cycle = ->
+        update()
+        draw()
+
+    cycle()
