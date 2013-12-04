@@ -20,9 +20,17 @@ $ ->
     scale_x = width / (max_x - min_x)
     scale_y = height/ (max_y - min_y)
 
-
     # 描画速度
     fps = 30
+
+    ans = null
+    boundary = null
+    points = null
+    ans_w = null
+    counter = 0
+    finish = false
+    points_num = 100
+
 
     convert_x = (x) ->
         (x - min_x) * scale_x
@@ -81,13 +89,23 @@ $ ->
                 ctx.drawLine(p0, p1)
 
 
-    ans = null
-    boundary = null
-    points = null
-    ans_w = [-1, 1, 0.1]
-    counter = 0
-    finish = false
-    points_num = 100
+    #フォームの値の取得
+    get_params = ->
+        w_x = $('#form [name=w_x]').val()
+        w_y = $('#form [name=w_y]').val()
+        w_z = $('#form [name=w_z]').val()
+        ans_w = [-1, 1, 0.1]
+        # points_num = $('#form [name=points_num]').val()
+        # min_x = $('#form [name=min_x]').val()
+        # max_x = $('#form [name=max_x]').val()
+        # min_y = $('#form [name=min_y]').val()
+        # max_y = $('#form [name=max_y]').val()
+        # scale_x = width / (max_x - min_x)
+        # scale_y = height/ (max_y - min_y)
+        console.log(points_num)
+        console.log(scale_x)
+        console.log(scale_y)
+
 
     # パラメータの初期化
     init = ->
@@ -147,7 +165,7 @@ $ ->
     draw = ->
         ctx.clearRect(0, 0, width, height)
         boundary.draw()
-        $('#w_param').text("w = (#{boundary.w[0]}, #{boundary.w[1]}, #{boundary.w[2]})")
+        $('#w_param').text("w = (#{boundary.w[0]}, #{boundary.w[1]}, #{boundary.w[2]})").val()
 
     cycle = ->
         update()
@@ -155,5 +173,6 @@ $ ->
         draw()
         setTimeout(cycle, 1/fps)
 
+    get_params()
     init()
     cycle()
