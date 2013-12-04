@@ -5,8 +5,12 @@ $ ->
     # canvasの取得
     canvas = document.getElementById('canvas')
     ctx = canvas.getContext('2d')
+    # 更新する必要の無い描画は静的キャンバスに分けてパフォーマンス向上
+    canvas_static = document.getElementById('canvas_static')
+    ctx_static = canvas.getContext('2d')
     width = $('#canvas').width()
     height = $('#canvas').height()
+    scale = width
     radius = width / 2
     center =
         x: width / 2,
@@ -17,6 +21,8 @@ $ ->
 
     # 点の描画
     ctx.drawPoint = (x, y, sign = 1, radius = 2) ->
+        x *= scale
+        y *= scale
         @beginPath()
         if sign >= 0
             @fillStyle = 'rgb(255, 0, 0)' # 赤
@@ -28,8 +34,8 @@ $ ->
     # 線の描画
     ctx.drawLine = (a, b) ->
         @beginPath()
-        @moveTo(a.x, a.y)
-        @lineTo(b.x, b.y)
+        @moveTo(a.x * scale, a.y * scale)
+        @lineTo(b.x * scale, b.y * scale)
         @stroke()
 
     # 点
@@ -58,7 +64,7 @@ $ ->
             ctx.drawLine(p0, p1)
 
     # パラメータの初期化
-    boundary = [0, 1, -width / 2]
+    boundary = [-1, 1, 0.5]
     ans      = new Classifier(boundary)
 
     p = new Point(1, 0)
@@ -70,7 +76,7 @@ $ ->
 
     # 点の生成
     points_num = 100
-    points = (new Point(width * m.random(), height * m.random()) for i in [0...points_num])
+    points = (new Point(m.random(), m.random()) for i in [0...points_num])
 
     for p in points
         p.set_val(ans.calc(p))
