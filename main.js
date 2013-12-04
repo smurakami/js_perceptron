@@ -24,13 +24,25 @@
       this.arc(x, y, radius, 0, Math.PI * 2, false);
       return this.fill();
     };
-    ctx.drawLine = function(a, b) {};
+    ctx.drawLine = function(a, b) {
+      this.beginPath();
+      this.moveTo(a.x, a.y);
+      this.lineTo(b.x, b.y);
+      return this.stroke();
+    };
     all_point = 0;
     point_in_the_circle = 0;
     pi = 0;
     ctx.beginPath();
     ctx.arc(center.x, center.y, radius, 0, Math.PI * 2, false);
     ctx.stroke();
+    ctx.drawLine({
+      x: 0,
+      y: 0
+    }, {
+      x: width,
+      y: height
+    });
     update = function() {
       var in_the_circle, x, y;
       x = Math.random() * width;
