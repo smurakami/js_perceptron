@@ -19,6 +19,9 @@ $ ->
         ctx.arc(x, y, radius, 0, Math.PI * 2, false)
         ctx.fill()
 
+    # 線の描画
+    drawLine = (a, b) ->
+
 
     all_point = 0
     point_in_the_circle = 0
