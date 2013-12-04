@@ -10,7 +10,36 @@
 <body>
     <canvas id="canvas" width="500" height="500"></canvas>
     <canvas id="canvas_static" width="500" height="500"></canvas>
-    <p id="w_param"></p>
+    <p id="w_param">hoge</p>
+    <p>パラメーター変更</p>
+    <form id="form">
+        データ点のクラスの境界y=wΦ(x)を表す三次元ベクトルwの要素<br />
+        <label>w_x</label>
+        <input type="text" name="w_x" value="This is text." />
+        <label>w_y</label>
+        <input type="text" name="w_y" value="This is text." />
+        <label>w_z</label>
+        <input type="text" name="w_z" value="This is text." />
+        <br />
+        <label>データ点の数</label>
+        <input type="text" name="points_num" value="This is text." />
+        <br />
+        データ範囲 <br />
+        <label>min_x</label>
+        <input type="text" name="min_x" value="This is text." />
+        <label>max_x</label>
+        <input type="text" name="max_x" value="This is text." />
+        <br />
+        <label>min_y</label>
+        <input type="text" name="min_y" value="This is text." />
+        <label>max_y</label>
+        <input type="text" name="max_y" value="This is text." />
+        <br />
+        <label>描画のFPS</label>
+        <input type="text" name="fps" value="This is text." />
+        <br />
+        <input type="button" value="変更" />
+    </form>
 </body>
 </html>
 

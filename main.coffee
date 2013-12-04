@@ -1,13 +1,13 @@
 $ ->
     # ライブラリをつかいやすく
     m = Math
-
     # canvasの取得
     canvas = document.getElementById('canvas')
     ctx = canvas.getContext('2d')
     # 更新する必要の無い描画は静的キャンバスに分けてパフォーマンス向上
     canvas_static = document.getElementById('canvas_static')
-    ctx_static = canvas.getContext('2d')
+    ctx_static = canvas_static.getContext('2d')
+    # 各種パラメータの設定
     width = $('#canvas').width()
     height = $('#canvas').height()
     scale = width
@@ -20,7 +20,7 @@ $ ->
     fps = 30
 
     # 点の描画
-    ctx.drawPoint = (x, y, sign = 1, radius = 2) ->
+    CanvasRenderingContext2D.prototype.drawPoint = (x, y, sign = 1, radius = 2) ->
         x *= scale
         y *= scale
         @beginPath()
@@ -32,7 +32,7 @@ $ ->
         @fill()
 
     # 線の描画
-    ctx.drawLine = (a, b) ->
+    CanvasRenderingContext2D.prototype.drawLine = (a, b) ->
         @beginPath()
         @moveTo(a.x * scale, a.y * scale)
         @lineTo(b.x * scale, b.y * scale)
@@ -41,7 +41,11 @@ $ ->
     # 点
     class Point
         constructor: (@x = 0, @y = 0) ->
-        draw: -> ctx.drawPoint(@x, @y, @sign)
+        draw: (static_draw = false) ->
+            if static_draw
+                ctx_static.drawPoint(@x, @y, @sign)
+            else
+                ctx.drawPoint(@x, @y, @sign)
         set_val: (@val) ->
             @sign = if @val >= 0 then 1 else -1
 
@@ -50,7 +54,7 @@ $ ->
         constructor: (@w = [0, 0, 0]) ->
         calc: (p) ->
             val = p.x * @w[0] + p.y * @w[1] + @w[2]
-        draw: ->
+        draw: (static_draw = false) ->
             a = @w[0]
             b = @w[1]
             c = @w[2]
@@ -61,28 +65,36 @@ $ ->
             else
                 p0 = {x:      0, y: -c/b}
                 p1 = {x:  width, y: -width * a/b + -c/b}
-            ctx.drawLine(p0, p1)
+            if static_draw
+                ctx_static.drawLine(p0, p1)
+            else
+                ctx.drawLine(p0, p1)
+
+
+    ans = null
+    boundary = null
+    points = null
+    ans_w = [-1, 1, 0.1]
+    counter = 0
+    finish = false
+    points_num = 100
 
     # パラメータの初期化
-    boundary = [-1, 1, 0.5]
-    ans      = new Classifier(boundary)
+    init = ->
+        ans = new Classifier(ans_w)
+        boundary = new Classifier() # 学習するパラメータ
 
-    p = new Point(1, 0)
-    p.set_val(ans.calc(p))
-    console.log(p.val)
-    console.log(p.sign)
+        # 点の生成
+        points = (new Point(m.random(), m.random()) for i in [0...points_num])
 
-    param    = new Classifier() # 学習するパラメータ
+        for p in points
+            p.set_val(ans.calc(p))
 
-    # 点の生成
-    points_num = 100
-    points = (new Point(m.random(), m.random()) for i in [0...points_num])
+        counter = 0
+        finish  = false
 
-    for p in points
-        p.set_val(ans.calc(p))
-
-    counter = 0
-    finish  = false
+        for p in points
+            p.draw(true)
 
     # ループ
     update = ->
@@ -98,13 +110,13 @@ $ ->
 
         # 無作為に選ばれた点について、その点の分類先を予想
         p = points[counter]
-        val = param.calc(p)
+        val = boundary.calc(p)
         sign = if val >= 0 then 1 else -1
         if sign != p.sign
             # 予測が間違っていた場合、値を更新(逐次学習)
-            param.w[0] += p.sign * p.x
-            param.w[1] += p.sign * p.y
-            param.w[2] += p.sign * 1
+            boundary.w[0] += p.sign * p.x
+            boundary.w[1] += p.sign * p.y
+            boundary.w[2] += p.sign * 1
             misses++
 
         counter++
@@ -113,12 +125,11 @@ $ ->
                 # 間違いが無ければ学習終了
                 finish = true
             counter = 0
+
     draw = ->
         ctx.clearRect(0, 0, width, height)
-        for p in points
-            p.draw()
-        param.draw()
-        $('#w_param').text("w = (#{param.w[0]}, #{param.w[1]}, #{param.w[2]})")
+        boundary.draw()
+        $('#w_param').text("w = (#{boundary.w[0]}, #{boundary.w[1]}, #{boundary.w[2]})")
 
     cycle = ->
         update()
@@ -126,4 +137,5 @@ $ ->
         draw()
         setTimeout(cycle, 1/fps)
 
+    init()
     cycle()
