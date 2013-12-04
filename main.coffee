@@ -11,6 +11,7 @@ $ ->
     width = $('#canvas').width()
     height = $('#canvas').height()
 
+    # 範囲関連
     min_x = -1
     max_x = 1
     min_y = -1
@@ -104,6 +105,14 @@ $ ->
 
         for p in points
             p.draw(true)
+
+        # 軸の描画
+        x0 = {x: min_x, y: 0}
+        x1 = {x: max_x, y: 0}
+        ctx_static.drawLine(x0, x1)
+        y0 = {x: 0, y: min_y}
+        y1 = {x: 0, y: max_y}
+        ctx_static.drawLine(y0, y1)
 
     # ループ
     update = ->

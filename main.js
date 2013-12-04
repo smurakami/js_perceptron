@@ -129,7 +129,7 @@
     finish = false;
     points_num = 100;
     init = function() {
-      var i, p, _i, _j, _len, _len1, _results;
+      var i, p, x0, x1, y0, y1, _i, _j, _len, _len1;
       ans = new Classifier(ans_w);
       boundary = new Classifier();
       points = (function() {
@@ -146,12 +146,28 @@
       }
       counter = 0;
       finish = false;
-      _results = [];
       for (_j = 0, _len1 = points.length; _j < _len1; _j++) {
         p = points[_j];
-        _results.push(p.draw(true));
+        p.draw(true);
       }
-      return _results;
+      x0 = {
+        x: min_x,
+        y: 0
+      };
+      x1 = {
+        x: max_x,
+        y: 0
+      };
+      ctx_static.drawLine(x0, x1);
+      y0 = {
+        x: 0,
+        y: min_y
+      };
+      y1 = {
+        x: 0,
+        y: max_y
+      };
+      return ctx_static.drawLine(y0, y1);
     };
     update = function() {
       var index, misses, next_points, p, sign, val;
