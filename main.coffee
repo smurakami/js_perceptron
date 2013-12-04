@@ -37,13 +37,19 @@ $ ->
         constructor: (@x = 0, @y = 0) ->
         draw: -> ctx.drawPoint(@x, @y, @val)
 
-    class Line
-        constructor: (@w) ->
+    # 分類関数。y(x)にあたる
+    class Classifier
+        constructor: (@w = [0, 0, 0]) ->
+        calc: (p) ->
+            val = p.x * @w[0] + p.y * @w[1] + @w[2]
+            if val >= 0 then return 1
+            else return -1
         draw: ->
             a = @w[0]
             b = @w[1]
             c = @w[2]
             if b == 0 # x軸に平行な直線
+                if a == 0 then return # 直線でない
                 p0 = {x:     0, y:-c/a}
                 p1 = {x: width, y:-c/a}
             else
@@ -51,27 +57,39 @@ $ ->
                 p1 = {x:  width, y: -width * a/b + -c/b}
             ctx.drawLine(p0, p1)
 
-    # 分類関数。y(x)にあたる
-    class Classifier
-        constructor: (@w) ->
-        calc: (p) ->
-            val = p.x * @w[0] + p.y * @w[1] + @w[2]
-            if val >= 0 then return 1
-            else return -1
-
-    w = [-1, 2, 1]
-    y = new Classifier(w)
-    line = new Line(w)
+    boundary = [-1, 1, 0]
+    ans = new Classifier(boundary)
+    line = new Classifier()
 
     # 点の生成
     points_num = 100
     points = (new Point(width * m.random(), height * m.random()) for i in [0...points_num])
 
     for p in points
-        p.val = y.calc(p)
+        p.val = ans.calc(p)
+
+    counter = 0
+    finish = false
 
     # ループ
     update = ->
+        if counter == 0
+            # 配列をシャッフルする
+            next_p = []
+            while p.length > 0
+                index = m.floor(m.random() * p.length)
+                next_p.push(p[index])
+                p.slice(index, 1)
+            p = next_p
+            misses = 0
+
+
+
+        counter++
+        if counter == points_num
+            if misses == 0
+                finish = true
+            counter = 0
     draw = ->
         ctx.clearRect(0, 0, width, height)
         for p in points
@@ -80,6 +98,7 @@ $ ->
 
     cycle = ->
         update()
+        if finish then return
         draw()
         setTimeout(cycle, 1/fps)
 
