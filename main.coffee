@@ -12,17 +12,17 @@ $ ->
     height = $('#canvas').height()
 
     # 範囲関連
-    min_x = -1
-    max_x = 1
-    min_y = -1
-    max_y = 1
-
+    min_x = 0
+    max_x = 0
+    min_y = 0
+    max_y = 0
     scale_x = width / (max_x - min_x)
     scale_y = height/ (max_y - min_y)
 
     # 描画速度
-    fps = 30
+    fps = 0
 
+    # その他変数群
     ans = null
     boundary = null
     points = null
@@ -30,6 +30,7 @@ $ ->
     counter = 0
     finish = false
     points_num = 100
+    to_get_params = false
 
 
     convert_x = (x) ->
@@ -88,26 +89,32 @@ $ ->
             else
                 ctx.drawLine(p0, p1)
 
+    # ボタンのクリックイベントの受け取り
+    $("input:button").click ->
+        if finish
+            get_params()
+            init()
+            cycle()
+        else
+            finish = true
+            to_get_params = true
 
-    #フォームの値の取得
+    # フォームの値の取得
     get_params = ->
-        w_x = $('#form [name=w_x]').val()
-        w_y = $('#form [name=w_y]').val()
-        w_z = $('#form [name=w_z]').val()
+        w_x = Number($('#form [name=w_x]').val())
+        w_y = Number($('#form [name=w_y]').val())
+        w_z = Number($('#form [name=w_z]').val())
         ans_w = [-1, 1, 0.1]
-        # points_num = $('#form [name=points_num]').val()
-        # min_x = $('#form [name=min_x]').val()
-        # max_x = $('#form [name=max_x]').val()
-        # min_y = $('#form [name=min_y]').val()
-        # max_y = $('#form [name=max_y]').val()
-        # scale_x = width / (max_x - min_x)
-        # scale_y = height/ (max_y - min_y)
-        console.log(points_num)
-        console.log(scale_x)
-        console.log(scale_y)
+        points_num = Number($('#form [name=points_num]').val())
+        min_x = Number($('#form [name=min_x]').val())
+        max_x = Number($('#form [name=max_x]').val())
+        min_y = Number($('#form [name=min_y]').val())
+        max_y = Number($('#form [name=max_y]').val())
+        scale_x = width / (max_x - min_x)
+        scale_y = height/ (max_y - min_y)
+        fps = Number($('#form [name=fps]').val())
 
-
-    # パラメータの初期化
+    # 初期化
     init = ->
         ans = new Classifier(ans_w)
         boundary = new Classifier() # 学習するパラメータ
@@ -120,7 +127,11 @@ $ ->
 
         counter = 0
         finish  = false
+        to_get_params = false
 
+        # 静的画像の描画
+        ctx_static.clearRect(0, 0, width, height)
+        # 点の描画
         for p in points
             p.draw(true)
 
@@ -169,8 +180,13 @@ $ ->
 
     cycle = ->
         update()
-        if finish then return
         draw()
+        if finish
+            if(to_get_params)
+                get_params()
+                init()
+                cycle()
+            return
         setTimeout(cycle, 1/fps)
 
     get_params()
