@@ -104,7 +104,7 @@ $ ->
         w_x = Number($('#form [name=w_x]').val())
         w_y = Number($('#form [name=w_y]').val())
         w_z = Number($('#form [name=w_z]').val())
-        ans_w = [-1, 1, 0.1]
+        ans_w = [w_x, w_y, w_z]
         points_num = Number($('#form [name=points_num]').val())
         min_x = Number($('#form [name=min_x]').val())
         max_x = Number($('#form [name=max_x]').val())
