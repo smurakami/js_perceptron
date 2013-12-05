@@ -242,7 +242,7 @@
         }
         return;
       }
-      return setTimeout(cycle, 1 / fps);
+      return setTimeout(cycle, 1000 / fps);
     };
     get_params();
     init();

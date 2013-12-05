@@ -187,7 +187,8 @@ $ ->
                 init()
                 cycle()
             return
-        setTimeout(cycle, 1/fps)
+        # cycle()
+        setTimeout(cycle, 1000/fps)
 
     get_params()
     init()
